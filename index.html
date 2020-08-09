@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!--Source: https://socket.io/get-started/chat/-->
+    <title>Socket.IO chat</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font: 13px Helvetica, Arial;
+      }
+      form {
+        background: rgb(0, 0, 0);
+        padding: 3px;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+      }
+      form input {
+        border: 0;
+        padding: 10px;
+        width: 90%;
+        margin-right: 0.5%;
+      }
+      form button {
+        width: 9%;
+        background: rgb(30, 64, 218);
+        border: none;
+        padding: 10px;
+        color: white;
+        text-align: center;
+      }
+      #messages {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+      }
+      #messages li {
+        padding: 5px 10px;
+      }
+      #messages li:nth-child(odd) {
+        background: #eee;
+      }
+    </style>
+  </head>
+  <body>
+    <ul id="messages"></ul>
+    <form action="">
+      <input id="m" autocomplete="off" /><button>Send</button>
+    </form>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script>
+      $(function () {
+        var socket = io();
+        $("form").submit(function (e) {
+          e.preventDefault(); // prevents page reloading
+          socket.emit("chat message", $("#m").val());
+          $("#m").val("");
+          return false;
+        });
+        socket.on("chat message", function (msg) {
+          var currentDate = new Date(),
+            day = currentDate.getDate(),
+            month = currentDate.getMonth() + 1,
+            year = currentDate.getFullYear();
+          var currentDate = `${day}/${month}/${year}`;
+          var hours = new Date().getHours();
+          var mins = new Date().getMinutes();
+          var time = null;
+          if (hours <= 12) {
+            var time = "am";
+          } else {
+            var time = "pm";
+            hours = hours - 12;
+          }
+          if (mins < 10) {
+            var mins = `0${mins}`;
+          }
+          var date = new Date().getDay();
+          $("#messages").append(
+            $("<li>").text(`${currentDate} ${hours}:${mins}${time}`)
+          );
+          $("#messages").append($("<li>").text(msg));
+        });
+      });
+    </script>
+  </body>
+</html>
